@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<style>
+		body {
+			padding: 2rem;
+		}
+
+		card-custom {
+			width: 18rem;
+		}
+	</style>
+
+	<!-- BootStrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+	<title>Portfolio</title>
+</head>
+
+<body class="bg-dark">
+
+	<div id="loading" class="container">
+		<div class="d-flex justiy-content-center">
+			<h1 class="text-white text-center">Loading...</h1>
+			<div class="spinner-border text-white ms-auto" role="status">
+			</div>
+		</div>
+	</div>
+
+	<div id="main" class="container flex-column" hidden>
+		<img height=25% width=25% id="profileImage" alt="profileImage" class="text-white rounded mx-auto d-block">
+
+		<h2 id="fullName" class="text-white text-center"> </h2>
+		<h5 id="userName" class="text-white text-center text-secondary"></h5>
+		<p id="followerInformation" class="text-white text-center fw-light"></p>
+
+		<p class="text-white text-center fw-lighter">
+			Check me on <a id="githubLink" class="badge">GitHub</a>
+		</p>
+	</div>
+
+	<div id="repos-container" class="continer" hidden>
+		<h2 class="text-white text-center my-2">My Projects</h2>
+		<br>
+		<div id="repos">
+
+		</div>
+	</div>
+
+	<script>
+		fetch('https://api.github.com/users/Hungerarray')
+			.then(response => response.json())
+			.then(function (data) {
+				console.log(data);
+				document.getElementById('profileImage').src = data['avatar_url'];
+				document.getElementById('fullName').textContent = data['name'];
+				document.getElementById('userName').textContent = data['login'];
+				document.getElementById('githubLink').href = data['html_url'];
+
+				let followerCount = data['followers'];
+				let followerInfo = `I have been followed by ${data['followers']} people.`;
+				document.getElementById('followerInformation').textContent = followerInfo;
+
+				document.getElementById('loading').hidden = true;
+				document.getElementById('main').hidden = false;
+
+				fetch(data['repos_url'])
+					.then(response => response.json())
+					.then(function (data) {
+						console.log(data);
+						let repos = document.getElementById('repos');
+						repos.classList.add('row', 'row-cols-2',);
+
+						data.map(repo => {
+							if (repo.archived === false) {
+
+								let rElement = document.createElement('div');
+								rElement.classList.add("card-custom", "card", "bg-dark", "my-5");
+								repos.appendChild(rElement);
+
+								let repoName = document.createElement('h2');
+								repoName.textContent = repo['name'];
+								repoName.classList.add('text-light', 'text-center');
+								rElement.appendChild(repoName);
+
+								let buttonClass = document.createElement('div');
+								buttonClass.classList.add("d-flex", "justify-content-center");
+								rElement.appendChild(buttonClass);
+
+								let repoLink = document.createElement('a');
+								repoLink.textContent = 'Check it out!';
+								repoLink.href = repo['html_url'];
+								repoLink.setAttribute("role", "button");
+								repoLink.classList.add("btn-sm", "btn-success", "btn-block", "px-5");
+								buttonClass.appendChild(repoLink);
+							}
+						})
+					});
+				document.getElementById('repos-container').hidden = false;
+			});
+	</script>
+</body>
+
+</html>

@@ -75,7 +75,7 @@
 					.then(function (data) {
 						console.log(data);
 						let repos = document.getElementById('repos');
-						repos.classList.add('row', 'row-cols-2',);
+						repos.classList.add('row', 'row-cols-2', 'row-cols-1-sm');
 
 						data.map(repo => {
 							if (repo.archived === false) {
